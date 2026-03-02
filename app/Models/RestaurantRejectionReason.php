@@ -10,6 +10,18 @@ class RestaurantRejectionReason extends Model
 {
     use HasFactory;
 
+    public const FIELD_LABELS = [
+        'name_invalid' => 'Nombre del restaurante',
+        'description_invalid' => 'Descripción',
+        'address_invalid' => 'Dirección',
+        'phone_invalid' => 'Teléfono',
+        'email_invalid' => 'Email',
+        'categories_missing' => 'Categorías',
+        'photos_missing' => 'Fotos',
+        'website_invalid' => 'Sitio web',
+        'hours_invalid' => 'Horarios',
+    ];
+
     protected $fillable = [
         'restaurant_id',
         'name_invalid',
@@ -59,17 +71,24 @@ class RestaurantRejectionReason extends Model
     public function getInvalidFields(): array
     {
         $invalidFields = [];
-        
-        if ($this->name_invalid) $invalidFields[] = 'Nombre del restaurante';
-        if ($this->description_invalid) $invalidFields[] = 'Descripción';
-        if ($this->address_invalid) $invalidFields[] = 'Dirección';
-        if ($this->phone_invalid) $invalidFields[] = 'Teléfono';
-        if ($this->email_invalid) $invalidFields[] = 'Email';
-        if ($this->categories_missing) $invalidFields[] = 'Categorías';
-        if ($this->photos_missing) $invalidFields[] = 'Fotos';
-        if ($this->website_invalid) $invalidFields[] = 'Sitio web';
-        if ($this->hours_invalid) $invalidFields[] = 'Horarios';
-        
+
+        foreach (array_keys(self::FIELD_LABELS) as $field) {
+            if ($this->{$field}) {
+                $invalidFields[] = $field;
+            }
+        }
+
         return $invalidFields;
+    }
+
+    /**
+     * Devuelve etiquetas legibles para los campos inválidos.
+     */
+    public function getInvalidFieldLabels(): array
+    {
+        return array_map(
+            fn (string $field) => self::FIELD_LABELS[$field] ?? $field,
+            $this->getInvalidFields()
+        );
     }
 }

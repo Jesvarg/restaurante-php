@@ -30,8 +30,8 @@ return new class extends Migration
             $table->json('opening_hours')->nullable();
             // price_range: rango de precios (1-4, $ a $$$$)
             $table->tinyInteger('price_range')->default(2);
-            // status: estado del restaurante (active, inactive, pending)
-            $table->enum('status', ['active', 'inactive', 'pending'])->default('pending');
+            // status: estado del restaurante. String para compatibilidad entre motores (MySQL/SQLite/PostgreSQL)
+            $table->string('status', 20)->default('pending');
             // latitude y longitude para mapas
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();

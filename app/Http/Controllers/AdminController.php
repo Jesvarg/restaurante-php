@@ -72,9 +72,9 @@ class AdminController extends Controller
                 'suspension_reason' => null
             ]);
             
-            return back()->with('success', "✅ Restaurante '{$restaurant->name}' aprobado exitosamente.");
+            return back()->with('success', "Restaurante '{$restaurant->name}' aprobado exitosamente.");
         } catch (\Exception $e) {
-            return back()->with('error', "❌ Error al aprobar el restaurante: " . $e->getMessage());
+            return back()->with('error', "Error al aprobar el restaurante: " . $e->getMessage());
         }
     }
 
@@ -119,9 +119,9 @@ class AdminController extends Controller
             // Enviar notificación al propietario del restaurante
             $notificationService->sendRejectionNotification($restaurant, $rejectionReason);
             
-            return back()->with('success', "🚫 Restaurante '{$restaurant->name}' rechazado con detalles estructurados. Se ha notificado al propietario.");
+            return back()->with('success', "Restaurante '{$restaurant->name}' rechazado con detalles estructurados. Se ha notificado al propietario.");
         } catch (\Exception $e) {
-            return back()->with('error', "❌ Error al rechazar el restaurante: " . $e->getMessage());
+            return back()->with('error', "Error al rechazar el restaurante: " . $e->getMessage());
         }
     }
 
@@ -143,9 +143,9 @@ class AdminController extends Controller
                 'rejection_reason' => null
             ]);
             
-            return back()->with('success', "⏸️ Restaurante '{$restaurant->name}' suspendido.");
+            return back()->with('success', "Restaurante '{$restaurant->name}' suspendido.");
         } catch (\Exception $e) {
-            return back()->with('error', "❌ Error al suspender el restaurante: " . $e->getMessage());
+            return back()->with('error', "Error al suspender el restaurante: " . $e->getMessage());
         }
     }
 
@@ -161,9 +161,9 @@ class AdminController extends Controller
                 'suspension_reason' => null
             ]);
             
-            return back()->with('success', "✅ Restaurante '{$restaurant->name}' reactivado exitosamente.");
+            return back()->with('success', "Restaurante '{$restaurant->name}' reactivado exitosamente.");
         } catch (\Exception $e) {
-            return back()->with('error', "❌ Error al reactivar el restaurante: " . $e->getMessage());
+            return back()->with('error', "Error al reactivar el restaurante: " . $e->getMessage());
         }
     }
 
@@ -190,8 +190,24 @@ class AdminController extends Controller
                   });
             });
         }
-    
-        $restaurants = $query->latest()->paginate(15);
+
+        // Ordenamiento
+        switch ($request->get('sort', 'created_at_desc')) {
+            case 'created_at_asc':
+                $query->oldest();
+                break;
+            case 'name_asc':
+                $query->orderBy('name');
+                break;
+            case 'name_desc':
+                $query->orderByDesc('name');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
+        $restaurants = $query->paginate(15)->withQueryString();
     
         // Obtener estadísticas por estado
         $statusCounts = Restaurant::selectRaw('status, COUNT(*) as count')

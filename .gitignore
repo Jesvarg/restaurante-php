@@ -1,79 +1,75 @@
-/.phpunit.cache
-# Dependencies
-/node_modules
-/vendor
+# Dependency directories
+/vendor/
+/node_modules/
 composer.phar
 
-# Laravel specific
-/public/build
+# Laravel build/runtime files
+/public/build/
 /public/hot
 /public/storage
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
 /storage/*.key
 /storage/logs/*
+!/storage/logs/.gitignore
 /storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+!/storage/framework/cache/data/.gitignore
 /storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
 /storage/framework/views/*
-/bootstrap/cache/*
+!/storage/framework/views/.gitignore
+/storage/app/cache/*
 
 # Environment files
 .env
-.env.backup
-.env.production
-.env.local
-.env.testing
+.env.*
+!.env.example
 
-# Database
+# Databases/local data
 *.sqlite
 *.sqlite3
+*.db
 /database/database.sqlite
+/restaurantes-directorio
 
-# Testing
-.phpunit.result.cache
-/coverage
-
-# IDE and Editor files
-/.fleet
-/.idea
-/.vscode
-.DS_Store
-Thumbs.db
-.trae/*
+# Testing and coverage
+/.phpunit.cache/
+/.phpunit.result.cache
+/coverage/
 
 # Logs
-npm-debug.log
-yarn-error.log
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Deployment
-Homestead.json
-Homestead.yaml
-auth.json
+# IDE/editor
+/.fleet/
+/.idea/
+/.vscode/
+/.trae/
 
-# OS generated files
+# OS files
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
 Thumbs.db
+ehthumbs.db
 
-# Temporary files
+# Temp/swap files
 *.tmp
 *.temp
 *.swp
 *.swo
 *~
 
-# Uploads (if you have file uploads)
-/public/uploads/*
-!/public/uploads/.gitkeep
-
-# Cache
-/storage/app/cache/*
-/storage/framework/cache/data/*
-
-# Compiled assets
-/public/css/app.css
-/public/js/app.js
-/public/mix-manifest.json
+# Optional deployment/local files
+Homestead.json
+Homestead.yaml
+auth.json

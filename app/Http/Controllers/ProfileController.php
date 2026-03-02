@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\RestaurantController;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller

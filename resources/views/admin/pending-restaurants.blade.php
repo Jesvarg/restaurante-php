@@ -149,7 +149,7 @@
                                 data-restaurant-website="{{ $restaurant->website }}"
                                 data-restaurant-price-range="{{ $restaurant->price_range }}"
                                 data-restaurant-categories="{{ $restaurant->categories->pluck('name')->implode(', ') }}"
-                                data-restaurant-images="{{ implode(',', $restaurant->images ?? []) }}"
+                                data-restaurant-images="{{ $restaurant->photos->pluck('full_url')->implode(',') }}"
                                 data-restaurant-owner="{{ $restaurant->user->name }}"
                                 data-restaurant-owner-email="{{ $restaurant->user->email }}">
                             <i class="bi bi-eye me-1"></i>
@@ -337,9 +337,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </label>
                             </div>
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="rejection_checks[contact_invalid]" id="contact_invalid">
-                                <label class="form-check-label" for="contact_invalid">
-                                    Información de contacto inválida
+                                <input class="form-check-input" type="checkbox" name="rejection_checks[phone_invalid]" id="phone_invalid">
+                                <label class="form-check-label" for="phone_invalid">
+                                    Teléfono inválido o incompleto
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="rejection_checks[email_invalid]" id="email_invalid">
+                                <label class="form-check-label" for="email_invalid">
+                                    Email inválido
                                 </label>
                             </div>
                         </div>
@@ -351,21 +357,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </label>
                             </div>
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="rejection_checks[categories_invalid]" id="categories_invalid">
-                                <label class="form-check-label" for="categories_invalid">
-                                    Categorías incorrectas
+                                <input class="form-check-input" type="checkbox" name="rejection_checks[categories_missing]" id="categories_missing">
+                                <label class="form-check-label" for="categories_missing">
+                                    Categorías faltantes o incorrectas
                                 </label>
                             </div>
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="rejection_checks[duplicate_restaurant]" id="duplicate_restaurant">
-                                <label class="form-check-label" for="duplicate_restaurant">
-                                    Restaurante duplicado
+                                <input class="form-check-input" type="checkbox" name="rejection_checks[website_invalid]" id="website_invalid">
+                                <label class="form-check-label" for="website_invalid">
+                                    Sitio web inválido
                                 </label>
                             </div>
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="rejection_checks[other_reason]" id="other_reason">
-                                <label class="form-check-label" for="other_reason">
-                                    Otra razón
+                                <input class="form-check-input" type="checkbox" name="rejection_checks[hours_invalid]" id="hours_invalid">
+                                <label class="form-check-label" for="hours_invalid">
+                                    Horarios incorrectos o incompletos
                                 </label>
                             </div>
                         </div>

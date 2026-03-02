@@ -8,7 +8,10 @@ use App\Http\Requests\StoreRestaurantRequest;
 use App\Http\Requests\UpdateRestaurantRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Throwable;
 
 class RestaurantController extends Controller
 {
@@ -17,7 +20,7 @@ class RestaurantController extends Controller
      */
     public function __construct()
     {
-        // Solo los métodos create, store, edit, update, destroy requieren autenticación
+        // Solo los métodos de escritura requieren autenticación
         $this->middleware('auth')->except(['index', 'show']);
     }
 
@@ -100,13 +103,6 @@ class RestaurantController extends Controller
     public function store(StoreRestaurantRequest $request)
     {
         try {
-            \Log::info('Store method called', [
-                'has_files' => $request->hasFile('photos'),
-                'files_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
-                'photo_urls_count' => $request->filled('photo_urls') ? count($request->photo_urls) : 0,
-                'all_files' => $request->allFiles()
-            ]);
-            
             DB::beginTransaction();
 
             // Crear el restaurante
@@ -123,31 +119,26 @@ class RestaurantController extends Controller
                 'user_id' => Auth::id(),
                 'status' => 'pending', // Requiere aprobación
             ]);
-            \Log::info('Restaurant created', ['restaurant_id' => $restaurant->id]);
 
             // Asociar categorías
             $restaurant->categories()->attach($request->categories);
-            \Log::info('Categories attached');
 
             // Manejar fotos subidas
             if ($request->hasFile('photos')) {
-                \Log::info('Processing uploaded photos');
                 $this->handlePhotoUploads($restaurant, $request->file('photos'));
             }
 
             // Manejar URLs de fotos
             if ($request->filled('photo_urls')) {
-                \Log::info('Processing photo URLs');
                 $this->handlePhotoUrls($restaurant, $request->photo_urls);
             }
 
             DB::commit();
-            \Log::info('Transaction committed successfully');
 
             return redirect()->route('restaurants.show', $restaurant)
                 ->with('success', 'Restaurante creado exitosamente. Está pendiente de aprobación.');
 
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             \Log::error('Error creating restaurant: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
@@ -242,10 +233,7 @@ class RestaurantController extends Controller
             if ($request->filled('delete_photos')) {
                 $photosToDelete = $restaurant->photos()->whereIn('id', $request->input('delete_photos'))->get();
                 foreach ($photosToDelete as $photo) {
-                    // Eliminar archivo del almacenamiento si es local
-                    if (str_starts_with($photo->url, 'storage/')) {
-                        Storage::disk('public')->delete(str_replace('storage/', '', $photo->url));
-                    }
+                    $this->deleteStoredPhotoIfLocal($photo->url);
                     $photo->delete();
                 }
             }
@@ -263,41 +251,10 @@ class RestaurantController extends Controller
             return redirect()->route('restaurants.show', $restaurant)
                            ->with('success', 'Restaurante actualizado exitosamente.');
                            
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return back()->withErrors([
                 'error' => 'Ocurrió un error al actualizar el restaurante.'
             ])->withInput();
-        }
-    }
-
-    /**
-     * Eliminar restaurante
-     * DELETE /restaurants/{restaurant}
-     */
-    public function destroy(Restaurant $restaurant)
-    {
-        // Verificar permisos
-        if (Auth::id() !== $restaurant->user_id) {
-            abort(403, 'No tienes permisos para eliminar este restaurante.');
-        }
-
-        try {
-            // Eliminar fotos del almacenamiento
-            foreach ($restaurant->photos as $photo) {
-                if (Storage::disk('public')->exists($photo->url)) {
-                    Storage::disk('public')->delete($photo->url);
-                }
-            }
-
-            $restaurant->delete();
-
-            return redirect()->route('restaurants.index')
-                           ->with('success', 'Restaurante eliminado exitosamente.');
-                           
-        } catch (\Exception $e) {
-            return back()->withErrors([
-                'error' => 'Ocurrió un error al eliminar el restaurante.'
-            ]);
         }
     }
 
@@ -405,8 +362,7 @@ class RestaurantController extends Controller
     }
 
     /**
-     * Manejar subida de fotos/**
-     * Process opening hours from time picker format to JSON format
+     * Process opening hours from time picker format to JSON format.
      */
     private function processOpeningHours(array $validated): ?array
     {
@@ -438,21 +394,9 @@ class RestaurantController extends Controller
      */
     private function handlePhotoUploads(Restaurant $restaurant, array $photos)
     {
-        \Log::info('handlePhotoUploads called', [
-            'photos_count' => count($photos),
-            'restaurant_id' => $restaurant->id
-        ]);
-        
         foreach ($photos as $index => $photo) {
             if ($photo && $photo->isValid()) {
                 try {
-                    \Log::info('Processing photo', [
-                        'index' => $index,
-                        'original_name' => $photo->getClientOriginalName(),
-                        'mime_type' => $photo->getMimeType(),
-                        'size' => $photo->getSize()
-                    ]);
-                    
                     // Validar que sea una imagen
                     $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
                     $mimeType = $photo->getMimeType();
@@ -475,23 +419,20 @@ class RestaurantController extends Controller
                         $extension = $mimeToExt[$mimeType] ?? 'jpg';
                     }
                     
-                    $filename = time() . '_' . $index . '.' . $extension;
-                    \Log::info('Generated filename', ['filename' => $filename]);
+                    $filename = Str::uuid()->toString() . '_' . $index . '.' . $extension;
                     
                     // Guardar archivo
                     $path = $photo->storeAs('restaurants', $filename, 'public');
-                    \Log::info('File stored', ['path' => $path]);
                     
                     // Crear registro en base de datos
-                    $photoRecord = $restaurant->photos()->create([
+                    $restaurant->photos()->create([
                         'url' => $path,
                         'alt_text' => "Foto de {$restaurant->name}",
                         'is_primary' => $index === 0 && $restaurant->photos()->count() === 0,
                         'order' => $restaurant->photos()->count() + 1,
                     ]);
-                    \Log::info('Photo record created', ['photo_id' => $photoRecord->id]);
                     
-                } catch (\Exception $e) {
+                } catch (Throwable $e) {
                     // Log error but continue with other photos
                     \Log::error('Error uploading photo: ' . $e->getMessage(), [
                         'index' => $index,
@@ -509,7 +450,8 @@ class RestaurantController extends Controller
     private function handlePhotoUrls(Restaurant $restaurant, array $photoUrls)
     {
         foreach ($photoUrls as $index => $url) {
-            if (!empty(trim($url))) {
+            $url = trim((string) $url);
+            if (!empty($url)) {
                 try {
                     // Validar que la URL sea válida y apunte a una imagen
                     if (filter_var($url, FILTER_VALIDATE_URL) && 
@@ -523,12 +465,27 @@ class RestaurantController extends Controller
                             'order' => $restaurant->photos()->count() + 1,
                         ]);
                     }
-                } catch (\Exception $e) {
+                } catch (Throwable $e) {
                     // Log error but continue with other URLs
                     \Log::error('Error processing photo URL: ' . $e->getMessage());
                     continue;
                 }
             }
+        }
+    }
+
+    private function deleteStoredPhotoIfLocal(string $photoPath): void
+    {
+        if (filter_var($photoPath, FILTER_VALIDATE_URL)) {
+            return;
+        }
+
+        $normalizedPath = str_starts_with($photoPath, 'storage/')
+            ? str_replace('storage/', '', $photoPath)
+            : $photoPath;
+
+        if (Storage::disk('public')->exists($normalizedPath)) {
+            Storage::disk('public')->delete($normalizedPath);
         }
     }
 }

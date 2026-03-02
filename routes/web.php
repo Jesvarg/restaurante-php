@@ -49,17 +49,6 @@ Route::middleware('auth')->group(function () {
         ->name('restaurants.toggleFavorite');
 });
 
-// API Routes for AJAX requests
-Route::prefix('api')->middleware('auth')->group(function () {
-    
-    Route::post('/restaurants/{restaurant}/reviews', [RestaurantController::class, 'storeReview'])
-        ->name('api.restaurants.reviews.store');
-});
-
-// Search and Filter Routes
-Route::get('/search', [RestaurantController::class, 'search'])->name('restaurants.search');
-Route::get('/category/{category}', [RestaurantController::class, 'byCategory'])->name('restaurants.category');
-
 // User Dashboard Routes
 Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::get('/', function () {

@@ -3,7 +3,6 @@
 namespace App\Http\View\Composers;
 
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Restaurant;
 
 class NotificationComposer

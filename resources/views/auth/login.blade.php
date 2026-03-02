@@ -143,7 +143,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/form-utils.js') }}"></script>
 <script>
 // Toggle password visibility
 document.getElementById('togglePassword').addEventListener('click', function() {

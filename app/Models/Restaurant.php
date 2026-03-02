@@ -136,7 +136,7 @@ class Restaurant extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', self::STATUS_APPROVED);
+        return $query->whereIn('status', [self::STATUS_APPROVED, self::STATUS_ACTIVE]);
     }
 
     /**
@@ -144,7 +144,7 @@ class Restaurant extends Model
      */
     public function scopePublic($query)
     {
-        return $query->where('status', self::STATUS_APPROVED);
+        return $query->whereIn('status', [self::STATUS_APPROVED, self::STATUS_ACTIVE]);
     }
 
     /**
@@ -152,7 +152,7 @@ class Restaurant extends Model
      */
     public function isApproved(): bool
     {
-        return $this->status === self::STATUS_APPROVED;
+        return in_array($this->status, [self::STATUS_APPROVED, self::STATUS_ACTIVE], true);
     }
 
     /**

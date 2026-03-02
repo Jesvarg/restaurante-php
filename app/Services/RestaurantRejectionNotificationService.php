@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Restaurant;
 use App\Models\RestaurantRejectionReason;
-use App\Models\User;
 use App\Notifications\RestaurantRejectedNotification;
 
 class RestaurantRejectionNotificationService
@@ -32,11 +31,12 @@ class RestaurantRejectionNotificationService
             'name_invalid' => 'El nombre del restaurante es inválido o inapropiado',
             'description_invalid' => 'La descripción necesita ser mejorada o es inadecuada',
             'address_invalid' => 'La dirección está incorrecta o incompleta',
-            'contact_invalid' => 'La información de contacto (teléfono/email) es inválida',
+            'phone_invalid' => 'El teléfono es inválido o incompleto',
+            'email_invalid' => 'El email de contacto es inválido',
+            'categories_missing' => 'Faltan categorías o son incorrectas',
             'photos_missing' => 'Faltan fotos o las existentes son inadecuadas',
-            'categories_invalid' => 'Las categorías seleccionadas son incorrectas',
-            'duplicate_restaurant' => 'Este restaurante ya existe en nuestro directorio',
-            'other_reason' => 'Otros motivos (ver notas adicionales)'
+            'website_invalid' => 'El sitio web es inválido',
+            'hours_invalid' => 'Los horarios son incorrectos o incompletos',
         ];
         
         $rejectedFields = [];

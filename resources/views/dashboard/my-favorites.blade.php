@@ -55,7 +55,7 @@
                                         <a href="{{ route('restaurants.show', $restaurant) }}" class="btn btn-primary btn-sm flex-grow-1">
                                             <i class="bi bi-eye me-1"></i>Ver Detalles
                                         </a>
-                                        <form action="{{ route('restaurants.favorite', $restaurant) }}" method="POST" class="d-inline">
+                                        <form action="{{ route('restaurants.toggleFavorite', $restaurant) }}" method="POST" class="d-inline">
                                             @csrf
                                             <button type="submit" class="btn btn-outline-danger btn-sm" title="Quitar de favoritos">
                                                 <i class="bi bi-heart-fill"></i>

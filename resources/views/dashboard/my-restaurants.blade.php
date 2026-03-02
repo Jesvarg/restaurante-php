@@ -33,35 +33,8 @@
                             </h6>
                             <p class="mb-2">Su restaurante ha sido rechazado por las siguientes razones:</p>
                             <ul class="mb-2">
-                                @foreach($latestRejection->getInvalidFields() as $field)
-                                    <li>
-                                        @switch($field)
-                                            @case('name_invalid')
-                                                El nombre del restaurante es inválido o inapropiado
-                                                @break
-                                            @case('description_invalid')
-                                                La descripción necesita ser mejorada o es inadecuada
-                                                @break
-                                            @case('address_invalid')
-                                                La dirección está incorrecta o incompleta
-                                                @break
-                                            @case('contact_invalid')
-                                                La información de contacto (teléfono/email) es inválida
-                                                @break
-                                            @case('photos_missing')
-                                                Faltan fotos o las existentes son inadecuadas
-                                                @break
-                                            @case('categories_invalid')
-                                                Las categorías seleccionadas son incorrectas
-                                                @break
-                                            @case('duplicate_restaurant')
-                                                Este restaurante ya existe en nuestro directorio
-                                                @break
-                                            @case('other_reason')
-                                                Otros motivos (ver notas adicionales)
-                                                @break
-                                        @endswitch
-                                    </li>
+                                @foreach($latestRejection->getInvalidFieldLabels() as $fieldLabel)
+                                    <li>{{ $fieldLabel }}</li>
                                 @endforeach
                             </ul>
                             @if($latestRejection->notes)
@@ -102,8 +75,27 @@
                                 <div class="card-body d-flex flex-column">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h5 class="card-title mb-0">{{ $restaurant->name }}</h5>
-                                        <span class="badge bg-{{ $restaurant->status === 'active' ? 'success' : ($restaurant->status === 'pending' ? 'warning' : 'danger') }}">
-                                            {{ ucfirst($restaurant->status) }}
+                                        @php
+                                            $statusLabel = [
+                                                'approved' => 'Aprobado',
+                                                'pending' => 'Pendiente',
+                                                'rejected' => 'Rechazado',
+                                                'suspended' => 'Suspendido',
+                                                'active' => 'Activo',
+                                                'inactive' => 'Inactivo',
+                                            ][$restaurant->status] ?? ucfirst($restaurant->status);
+
+                                            $statusColor = [
+                                                'approved' => 'success',
+                                                'pending' => 'warning',
+                                                'rejected' => 'danger',
+                                                'suspended' => 'secondary',
+                                                'active' => 'success',
+                                                'inactive' => 'secondary',
+                                            ][$restaurant->status] ?? 'secondary';
+                                        @endphp
+                                        <span class="badge bg-{{ $statusColor }}">
+                                            {{ $statusLabel }}
                                         </span>
                                     </div>
                                     

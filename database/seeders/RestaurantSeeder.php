@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use App\Models\Restaurant;
 use App\Models\Category;
 use App\Models\User;
-use App\Models\Photo;
 
 class RestaurantSeeder extends Seeder
 {
@@ -119,11 +118,14 @@ class RestaurantSeeder extends Seeder
                 
                 // Add sample photos
                 $samplePhotos = [
-                    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',
-                    'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop',
-                    'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop',
-                    'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=600&fit=crop',
-                    'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop'
+                    'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                    'https://images.pexels.com/photos/67468/pexels-photo-67468.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                    'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                    'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                    'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                    'https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                    'https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=1200',
+                    'https://images.pexels.com/photos/1581384/pexels-photo-1581384.jpeg?auto=compress&cs=tinysrgb&w=1200'
                 ];
                 
                 // Create 2-3 photos per restaurant

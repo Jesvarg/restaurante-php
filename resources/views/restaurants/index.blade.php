@@ -263,12 +263,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/form-utils.js') }}"></script>
-<script>
-    // Configurar variable global para autenticación
-    window.isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
-</script>
-<script src="{{ asset('js/favorites.js') }}"></script>
 <script>
 
 // Auto-submit search form on Enter

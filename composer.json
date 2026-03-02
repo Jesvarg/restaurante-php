@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "directorio/restaurantes-app",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Aplicación web en Laravel para directorio y gestión de restaurantes.",
+    "keywords": ["laravel", "restaurantes", "directorio", "reviews", "favorites"],
     "license": "MIT",
     "require": {
         "php": "^8.1",
@@ -45,6 +45,16 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "setup:local": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan key:generate --ansi",
+            "@php artisan migrate --seed --force",
+            "@php artisan storage:link --force"
+        ],
+        "serve:local": [
+            "@php artisan serve"
         ]
     },
     "extra": {
